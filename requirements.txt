@@ -1,0 +1,12 @@
+streamlit
+streamlit-folium
+pandas
+folium
+osmnx
+networkx
+requests
+qrcode[pil]
+geopy==2.3.0
+shapely
+geopandas
+pyproj
