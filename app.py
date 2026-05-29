@@ -94,14 +94,14 @@ try:
             except:
                 path_coords = [(s_lat, s_lon)]
 
-            m = folium.Map(location=[(s_lat+g_lat)/2, (s_lon+g_lon)/2], zoom_start=18, max_zoom=24, tiles=None)
+            m = folium.Map(location=[(s_lat+g_lat)/2, (s_lon+g_lon)/2], zoom_start=18, max_zoom=24, tiles='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',attr='Esri')
 
             folium.TileLayer(
-                tiles='https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}',
-                attr='Google Satellite',
+                tiles='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+                attr='Esri World Imagery',
                 name='Satellite',
                 max_zoom=24,
-                max_native_zoom=20
+                max_native_zoom=19
             ).add_to(m)
 
             folium.PolyLine(path_coords, color='#39FF14', weight=6, opacity=0.9).add_to(m)
