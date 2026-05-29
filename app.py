@@ -10,6 +10,17 @@ import time
 
 st.set_page_config(page_title='Mapleview Cemetery Finder', layout='wide')
 
+st.markdown(
+    """
+    <style>
+    [data-testid="stElementToolbar"] {
+        display: none;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 # --- 15-MINUTE TIMEOUT SECURITY ---
 if 'start_time' not in st.session_state:
     st.session_state['start_time'] = time.time()
