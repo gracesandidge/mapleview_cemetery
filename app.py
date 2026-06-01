@@ -122,8 +122,8 @@ try:
             st_folium(m, width=800, height=600, use_container_width=True)
         else:
             st.warning('No names found matching that search.')
-except Exception as e:
-    st.error(f'Navigation load error: {e}')
+        except Exception as e:
+            st.error(f'Navigation load error: {e}')
 
             folium.TileLayer(
                 tiles='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
