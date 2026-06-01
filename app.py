@@ -7,6 +7,7 @@ import osmnx as ox
 import networkx as nx
 import os
 import time
+from rapidfuzz import process, fuzz
 
 st.set_page_config(page_title='Mapleview Cemetery Finder', layout='wide')
 
@@ -72,11 +73,19 @@ try:
     search_term = st.text_input('Search for a loved one (Last name, First name):').upper()
 
     if search_term:
-        matches = df[df['Name'].str.contains(search_term, na=False)]
+        # 1. Get a list of every unique name in the cemetery
+        all_names = df['Name'].unique().tolist()
+        
+        # 2. Score the names against the typo (limit to the top 5 closest matches)
+        results = process.extract(search_term, all_names, scorer=fuzz.WRatio, limit=5)
+        
+        # 3. Filter out terrible guesses (only keep scores of 60% match or higher)
+        best_matches = [res[0] for res in results if res[1] >= 60]
 
-        if not matches.empty:
-            selected_name = st.selectbox(f'Found {len(matches)} results:', matches['Name'].unique())
-            person = matches[matches['Name'] == selected_name].iloc[0]
+        if best_matches:
+            # 4. Show the "Did you mean?" dropdown
+            selected_name = st.selectbox(f'Did you mean one of these?', best_matches)
+            person = df[df['Name'] == selected_name].iloc[0]
             g_lat, g_lon = person['Latitude'], person['Longitude']
 
             st.success(f'📍 Record found for: {selected_name}')
@@ -108,12 +117,12 @@ try:
             folium.Marker([s_lat, s_lon], popup='Entrance', icon=folium.Icon(color='blue')).add_to(m)
             folium.Marker([g_lat, g_lon], popup=selected_name, icon=folium.Icon(color='red', icon='star')).add_to(m)
 
-            # Automatically adjusts the screen to fit both pins!
+            # Automatically adjusts the screen to fit both pins, but adds a 50-pixel border!
             m.fit_bounds([[s_lat, s_lon], [g_lat, g_lon]], padding=(50, 50), max_zoom=19)
 
             LocateControl(auto_start=False, flyTo=True).add_to(m)
             st_folium(m, width=800, height=600, use_container_width=True)
         else:
-            st.warning('No names found matching that search.')
+            st.warning('No matching names found. Please try a different spelling.')
 except Exception as e:
     st.error(f'Navigation load error: {e}')
