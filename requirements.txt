@@ -11,3 +11,4 @@ shapely
 geopandas
 pyproj
 scikit-learn
+rapidfuzz
