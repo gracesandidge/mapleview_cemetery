@@ -109,7 +109,7 @@ try:
             folium.Marker([g_lat, g_lon], popup=selected_name, icon=folium.Icon(color='red', icon='star')).add_to(m)
 
             # Automatically adjusts the screen to fit both pins!
-            m.fit_bounds([[s_lat, s_lon], [g_lat, g_lon]])
+            m.fit_bounds([[s_lat, s_lon], [g_lat, g_lon]], padding=(50, 50), max_zoom=19)
 
             LocateControl(auto_start=False, flyTo=True).add_to(m)
             st_folium(m, width=800, height=600, use_container_width=True)
