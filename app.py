@@ -34,7 +34,6 @@ if elapsed_time > 900:
 
 @st.cache_data
 def load_data():
-    # Notice: '/content/' is gone!
     file_path = 'Grave_Sites_with_Coords - Grave_Sites_with_Coords.csv'
     if not os.path.exists(file_path):
         st.error(f'File not found: {file_path}')
@@ -57,7 +56,6 @@ def get_graph():
 
 col1, col2 = st.columns([1, 4])
 with col1:
-    # Notice: '/content/' is gone here too!
     if os.path.exists('Smyrna Seal.png'): st.image('Smyrna Seal.png', width=200)
 with col2:
     st.title('Town of Smyrna', anchor=False)
@@ -94,7 +92,6 @@ try:
             except:
                 path_coords = [(s_lat, s_lon)]
 
-            # Lower the default zoom slightly just in case
             m = folium.Map(location=[(s_lat+g_lat)/2, (s_lon+g_lon)/2], zoom_start=17, max_zoom=24, tiles='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',attr='Esri')
 
             folium.TileLayer(
@@ -111,33 +108,8 @@ try:
             folium.Marker([s_lat, s_lon], popup='Entrance', icon=folium.Icon(color='blue')).add_to(m)
             folium.Marker([g_lat, g_lon], popup=selected_name, icon=folium.Icon(color='red', icon='star')).add_to(m)
 
-            # --- ADD THIS NEW LINE ---
-            # This forces the map to automatically frame both the entrance and the grave!
+            # Automatically adjusts the screen to fit both pins!
             m.fit_bounds([[s_lat, s_lon], [g_lat, g_lon]])
-            # -------------------------
-
-            LocateControl(auto_start=False, flyTo=True).add_to(m)
-            
-            # (Note: use_container_width=True is already making it fit the phone screen nicely)
-            st_folium(m, width=800, height=600, use_container_width=True)
-        else:
-            st.warning('No names found matching that search.')
-        except Exception as e:
-            st.error(f'Navigation load error: {e}')
-
-            folium.TileLayer(
-                tiles='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-                attr='Esri World Imagery',
-                name='Satellite',
-                max_zoom=24,
-                max_native_zoom=19
-            ).add_to(m)
-
-            folium.PolyLine(path_coords, color='#39FF14', weight=6, opacity=0.9).add_to(m)
-            folium.PolyLine([path_coords[-1], (g_lat, g_lon)], color='orange', weight=4, opacity=0.8, dash_array='5').add_to(m)
-
-            folium.Marker([s_lat, s_lon], popup='Entrance', icon=folium.Icon(color='blue')).add_to(m)
-            folium.Marker([g_lat, g_lon], popup=selected_name, icon=folium.Icon(color='red', icon='star')).add_to(m)
 
             LocateControl(auto_start=False, flyTo=True).add_to(m)
             st_folium(m, width=800, height=600, use_container_width=True)
