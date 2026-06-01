@@ -77,7 +77,7 @@ try:
         all_names = df['Name'].unique().tolist()
         
         # 2. Score the names against the typo (limit to the top 5 closest matches)
-        results = process.extract(search_term, all_names, scorer=fuzz.WRatio, limit=None)
+        results = process.extract(search_term, all_names, scorer=fuzz.token_set_ratio, limit=None)
         
         # 3. Filter out terrible guesses (only keep scores of 60% match or higher)
         best_matches = [res[0] for res in results if res[1] >= 60]
