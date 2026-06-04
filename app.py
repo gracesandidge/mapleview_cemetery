@@ -22,16 +22,36 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# --- 15-MINUTE TIMEOUT SECURITY ---
-if 'start_time' not in st.session_state:
-    st.session_state['start_time'] = time.time()
+# --- ADVANCED QR CODE SECURITY & TIMEOUT ---
 
+# 1. Check if the URL has our secret password ("qr=mapleview")
+if "qr" in st.query_params and st.query_params["qr"] == "mapleview":
+    # They scanned the real QR code! Mark them as allowed.
+    st.session_state['allowed_in'] = True
+    st.session_state['start_time'] = time.time()
+    
+    # 2. Erase the password from the URL bar instantly!
+    # This prevents them from bookmarking it or refreshing the page.
+    st.query_params.clear()
+
+# 3. If they don't have the 'allowed_in' badge, block them immediately
+if 'allowed_in' not in st.session_state:
+    st.error("📍 **Access Denied**")
+    st.write("This tool can only be accessed while physically at the cemetery.")
+    st.write("Please scan the QR code on the entrance sign to begin.")
+    st.stop()
+
+# 4. Check the 15-minute (900 seconds) timer
 elapsed_time = time.time() - st.session_state['start_time']
 
 if elapsed_time > 900:
     st.error("⏳ **Session Expired**")
-    st.write("For security, access is limited to 15 minutes. Please rescan the QR code to start a new session.")
+    st.write("Your 15-minute session has ended.")
+    st.write("Please rescan the physical QR code to start a new session.")
     st.stop()
+    
+# -------------------------------------------
+
 
 @st.cache_data
 def load_data():
